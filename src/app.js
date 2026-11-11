@@ -31,6 +31,18 @@ export async function handler(req, res) {
     if (req.method === 'OPTIONS') return sendPreflight(res);
 
     const url = new URL(req.url, 'http://localhost');
+
+    // On Vercel, vercel.json rewrites /api/* and /web/* to a single entry point and
+    // passes the original group and sub-path as ?scope=...&path=... Rebuild it here
+    // so this works whichever file Vercel runs (api/index.js or server.js).
+    const scope = url.searchParams.get('scope');
+    if (scope === 'api' || scope === 'web') {
+      const sub = url.searchParams.get('path') || '';
+      url.searchParams.delete('scope');
+      url.searchParams.delete('path');
+      url.pathname = `/${scope}/${sub}`;
+      req.url = url.pathname + url.search;
+    }
     const path = url.pathname.replace(/\/+$/, '') || '/';
 
     let routes;
