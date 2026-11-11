@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book an appointment – Ìlera Clinic</title>
+  <meta name="description" content="See open appointment times at Ìlera Clinic and book one in under a minute.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@500;700&family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="/" aria-label="Ìlera Clinic, home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="currentColor"/>
+          <circle cx="16" cy="16" r="9" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="2.2 2.6"/>
+          <circle cx="16" cy="16" r="3.4" fill="#fff"/>
+        </svg>
+        <span>Ìlera Clinic</span>
+      </a>
+      <form class="find" id="find-form" autocomplete="off">
+        <label for="find-input">Have a booking reference?</label>
+        <div class="find-row">
+          <input id="find-input" name="reference" placeholder="BK-XXXX-XXXX-XXXX" spellcheck="false" autocapitalize="characters" required>
+          <button type="submit" class="btn btn-quiet">Find booking</button>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+    <section class="picker" aria-labelledby="page-title">
+      <h1 id="page-title">Book an appointment</h1>
+      <p class="lede">Pick a time that suits you. You'll get a booking reference to show at reception.</p>
+
+      <fieldset class="doctors" id="doctors">
+        <legend class="step">Doctor</legend>
+        <div class="doctor-options" id="doctor-options"></div>
+      </fieldset>
+
+      <div class="step" id="days-label">Day</div>
+      <div class="days" id="days" role="group" aria-labelledby="days-label"></div>
+
+      <div class="times" id="times" aria-live="polite">
+        <p class="placeholder">Loading appointment times…</p>
+      </div>
+      <p class="tz-note" id="tz-note"></p>
+    </section>
+
+    <aside class="panel" id="panel" aria-live="polite">
+      <div class="panel-empty">
+        <p class="panel-empty-title">No time picked yet</p>
+        <p>Choose a time on the left to book it.</p>
+      </div>
+    </aside>
+  </main>
+
+  <template id="form-template">
+    <form class="booking-form" novalidate>
+      <h2 class="form-title">Your appointment</h2>
+      <p class="chosen"></p>
+      <label for="name">Full name</label>
+      <input id="name" name="name" autocomplete="name" required maxlength="200">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="254">
+      <p class="form-error" role="alert" hidden></p>
+      <button type="submit" class="btn btn-primary">Book this appointment</button>
+      <button type="button" class="btn btn-link change-time">Pick a different time</button>
+    </form>
+  </template>
+
+  <footer class="wrap footer">
+    <p>Ìlera Clinic is a demo for the Koya assessment. Bookings are real records in the database, but nobody will turn up.</p>
+  </footer>
+</body>
+</html>
