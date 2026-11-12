@@ -44,10 +44,26 @@
       </fieldset>
 
       <div class="step" id="days-label">Day</div>
-      <div class="days" id="days" role="group" aria-labelledby="days-label"></div>
+      <div class="days" id="days" role="group" aria-labelledby="days-label" aria-busy="true">
+        <span class="day skeleton" aria-hidden="true"></span>
+        <span class="day skeleton" aria-hidden="true"></span>
+        <span class="day skeleton" aria-hidden="true"></span>
+        <span class="day skeleton" aria-hidden="true"></span>
+        <span class="day skeleton" aria-hidden="true"></span>
+      </div>
 
       <div class="times" id="times" aria-live="polite">
-        <p class="placeholder">Loading appointment times…</p>
+        <p class="visually-hidden">Loading appointment times…</p>
+        <div class="slot-grid" aria-hidden="true">
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+          <span class="slot skeleton"></span>
+        </div>
       </div>
       <p class="tz-note" id="tz-note"></p>
     </section>

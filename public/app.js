@@ -60,8 +60,16 @@ async function loadSlots() {
     }
     renderPicker();
   } catch {
-    els.times.innerHTML = '';
-    els.times.append(el('p', { className: 'placeholder' }, "Couldn't load appointment times. Refresh the page to try again."));
+    els.days.replaceChildren();
+    const retry = el('button', { type: 'button', className: 'btn btn-quiet retry' }, 'Try again');
+    retry.addEventListener('click', () => {
+      retry.disabled = true;
+      retry.textContent = 'Loading…';
+      loadSlots();
+    });
+    els.times.replaceChildren(
+      el('div', { className: 'placeholder' }, el('p', {}, "Couldn't load appointment times."), retry)
+    );
   }
 }
 
