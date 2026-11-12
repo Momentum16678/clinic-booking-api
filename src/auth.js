@@ -1,4 +1,4 @@
-// Level 2: every API request must carry the right X-API-Key header.
+// Ensures that every API request must carry the right X-API-Key header.
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { HttpError } from './http.js';
 

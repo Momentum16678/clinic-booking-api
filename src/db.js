@@ -22,7 +22,7 @@ export function query(text, params) {
   return getPool().query(text, params);
 }
 
-/** Runs fn(client) inside BEGIN/COMMIT, rolling back if it throws. */
+// Runs fn inside BEGIN/COMMIT and rolls back if it throws.
 export async function withTransaction(fn) {
   const client = await getPool().connect();
   let failed = null;
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS booking_attempts (
 CREATE INDEX IF NOT EXISTS booking_attempts_email_idx ON booking_attempts (email, attempted_at);
 `;
 
-/** Inserts slots ({id, provider, start, end}) using the given client. */
+// Inserts slots ({id, provider, start, end}) using the given client.
 export async function insertSlots(client, slots) {
   if (slots.length === 0) return;
   const rows = slots.map((s) => ({
@@ -106,10 +106,8 @@ export async function insertSlots(client, slots) {
 
 let schemaReady = null;
 
-/**
- * Creates the tables on first use (once per server instance). A brand-new
- * database also gets two weeks of demo slots so the web page has something to show.
- */
+// Creates the tables on first use (once per instance), and seeds demo slots
+// into a brand-new database so the web page has something to show.
 export function ensureSchema() {
   if (!schemaReady) {
     schemaReady = withTransaction(async (client) => {

@@ -3,10 +3,7 @@ import { HttpError, isPlainObject } from './http.js';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * Validates a POST /bookings body and returns the cleaned-up values:
- * name and email trimmed, email lower-cased.
- */
+// Validates a POST /bookings body; returns the trimmed name and lower-cased email.
 export function parseNewBooking(body) {
   if (!isPlainObject(body)) throw new HttpError(400, 'request body must be a JSON object');
 

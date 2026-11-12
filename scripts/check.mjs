@@ -1,11 +1,6 @@
 #!/usr/bin/env node
-// End-to-end checks for all five levels, run against any deployment.
-//
-//   node scripts/check.mjs https://your-app.vercel.app/api YOUR_API_KEY
-//   (or set BASE_URL and API_KEY)
-//
-// WARNING: this calls POST /reset, which deletes every booking. When it finishes
-// it re-seeds the demo slots so the web page has something to show.
+// End-to-end checks for all five levels: node scripts/check.mjs <base-url> <api-key>
+// WARNING: calls POST /reset (deletes all bookings), then re-seeds the demo slots.
 import { demoSlots } from '../src/demoSlots.js';
 
 const BASE = (process.argv[2] || process.env.BASE_URL || 'http://localhost:3000/api').replace(/\/+$/, '');

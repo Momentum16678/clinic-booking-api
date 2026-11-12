@@ -6,12 +6,11 @@ import { parseNewBooking, normalizeEmail } from './validation.js';
 import { takeBookingAttempt } from './rateLimit.js';
 import { fingerprint, claimKey, saveResponse, releaseKey } from './idempotency.js';
 
-// created_at is formatted by Postgres as ISO-8601 UTC with milliseconds.
 const BOOKING_COLUMNS = `id, slot_id, name, email, status,
   to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS created_at`;
 
-// ---------------------------------------------------------------- create
 
+// Create Booking
 export async function createBooking({ req, body }) {
   const key = idempotencyKeyFrom(req);
   if (!key) return attemptBooking(body);
@@ -34,10 +33,8 @@ export async function createBooking({ req, body }) {
   }
 }
 
-/**
- * One booking attempt. Expected failures (400/404/409/429) come back as
- * results rather than exceptions, so they can be saved for idempotent replay.
- */
+// One booking attempt. Expected failures (400/404/409/429) return as results, not
+// exceptions, so they can be saved for idempotent replay.
 async function attemptBooking(body) {
   try {
     // Level 5: count every attempt for this email, valid or not.
@@ -95,9 +92,8 @@ async function insertBooking({ slotId, name, email }) {
   return { status: 201, body: booking };
 }
 
-// Booking ids double as the reference patients show at reception, so they're short
-// and easy to read aloud: BK-7F3K-9Q2M-XD4P. 12 random characters from an alphabet
-// without I, L, O or U (no 1/I or 0/O mix-ups) = 60 random bits, unguessable.
+// Booking id doubles as the reference shown at reception: BK-XXXX-XXXX-XXXX.
+// The alphabet skips I, L, O, U to avoid mix-ups; 60 random bits make it unguessable.
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
 function newBookingId() {
@@ -112,14 +108,14 @@ function idempotencyKeyFrom(req) {
   return key;
 }
 
-// ---------------------------------------------------------------- get & cancel
-
+// Get Booking
 export async function getBooking({ params }) {
   const { rows } = await query(`SELECT ${BOOKING_COLUMNS} FROM bookings WHERE id = $1`, [params.id]);
   if (rows.length === 0) throw new HttpError(404, 'booking not found');
   return { status: 200, body: rows[0] };
 }
 
+// Cancel Booking
 export async function cancelBooking({ params }) {
   // Only flips confirmed -> cancelled, so two cancels at once can't both succeed.
   const { rows } = await query(
@@ -135,8 +131,7 @@ export async function cancelBooking({ params }) {
   throw new HttpError(409, 'booking is already cancelled');
 }
 
-// ---------------------------------------------------------------- list (cursor pagination)
-
+// List Booking
 export async function listBookings({ url }) {
   const email = normalizeEmail(url.searchParams.get('email'));
   if (!email) throw new HttpError(400, 'email query parameter is required');

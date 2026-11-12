@@ -1,9 +1,5 @@
-// The request handler: routing, API-key check, JSON responses.
-//
-// Two route groups share the same booking logic:
-//   /api/*  the public API from the spec. Every request needs X-API-Key.
-//   /web/*  what the web page calls. It never sees the API key; the server
-//           calls the same functions directly. /reset is NOT exposed here.
+// Request handler: /api/* needs the X-API-Key, /web/* is what the web page calls (no key).
+// Both share the same booking logic; /reset is not exposed on /web.
 import { HttpError, sendJson, sendPreflight, readJsonBody } from './http.js';
 import { requireApiKey } from './auth.js';
 import { ensureSchema } from './db.js';
@@ -32,9 +28,8 @@ export async function handler(req, res) {
 
     const url = new URL(req.url, 'http://localhost');
 
-    // On Vercel, vercel.json rewrites /api/* and /web/* to a single entry point and
-    // passes the original group and sub-path as ?scope=...&path=... Rebuild it here
-    // so this works whichever file Vercel runs (api/index.js or server.js).
+    // Vercel rewrites /api/* and /web/* to one entry point as ?scope=...&path=...
+    // Rebuild the original URL here so routing and the key check work as normal.
     const scope = url.searchParams.get('scope');
     if (scope === 'api' || scope === 'web') {
       const sub = url.searchParams.get('path') || '';
@@ -74,7 +69,7 @@ export async function handler(req, res) {
   }
 }
 
-// ---------------------------------------------------------------- tiny router
+// Tiny router
 
 function route(method, pattern, fn, options = {}) {
   return { method, parts: pattern.split('/').filter(Boolean), fn, body: Boolean(options.body) };

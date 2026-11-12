@@ -1,6 +1,5 @@
-// Level 4: a retried POST /bookings with the same Idempotency-Key never creates
-// a second booking. The first request "claims" the key in Postgres (the primary
-// key makes the claim atomic) and saves its response; retries get that response back.
+// Level 4: a retry with the same Idempotency-Key never creates a second booking.
+// The first request claims the key in Postgres and saves its response; retries replay it.
 import { createHash } from 'node:crypto';
 import { query } from './db.js';
 import { HttpError } from './http.js';
@@ -8,7 +7,7 @@ import { HttpError } from './http.js';
 const WAIT_FOR_FIRST_REQUEST_MS = 5_000;
 const POLL_MS = 100;
 
-/** A stable hash of the request body, so key order or spacing doesn't matter. */
+// Stable hash of the body, so key order or spacing doesn't matter.
 export function fingerprint(body) {
   return createHash('sha256').update(canonicalJson(body)).digest('hex');
 }
@@ -22,11 +21,8 @@ function canonicalJson(value) {
   return JSON.stringify(value);
 }
 
-/**
- * Either claims the key for this request ({ claimed: true }) or returns the
- * response saved by an earlier request with the same key ({ replay: {...} }).
- * Throws 422 if the key was used with a different body.
- */
+// Claims the key for this request, or returns the response saved by an earlier one.
+// Throws 422 if the key was already used with a different body.
 export async function claimKey(key, hash) {
   const deadline = Date.now() + WAIT_FOR_FIRST_REQUEST_MS;
 
@@ -75,7 +71,7 @@ export async function saveResponse(key, result) {
   );
 }
 
-/** Gives the key back so a later retry can run fresh (used for 429s and crashes). */
+// Frees the key so a later retry can run fresh (used for 429s and crashes).
 export async function releaseKey(key) {
   await query('DELETE FROM idempotency_keys WHERE key = $1 AND status_code IS NULL', [key]);
 }

@@ -1,16 +1,12 @@
-// Level 5: at most 5 booking attempts per email per minute (sliding window).
-// Every attempt counts, including ones that fail validation or hit a booked slot.
-// The state lives in Postgres, not in memory, so the limit holds across all
-// server instances (serverless hosts run many copies of this code at once).
+// Level 5: max 5 booking attempts per email per minute (sliding window), failed ones included.
+// Stored in Postgres, not memory, so the limit holds across serverless instances.
 import { withTransaction } from './db.js';
 
 export const MAX_ATTEMPTS = 5;
 export const WINDOW_SECONDS = 60;
 
-/**
- * Records a booking attempt for this email if it's under the limit.
- * Returns { allowed: true } or { allowed: false, retryAfter: <whole seconds> }.
- */
+// Records an attempt if under the limit. Returns { allowed: true } or
+// { allowed: false, retryAfter } in whole seconds.
 export async function takeBookingAttempt(email) {
   return withTransaction(async (client) => {
     // Requests for the same email queue up here, one at a time, so six requests

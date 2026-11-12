@@ -71,7 +71,7 @@ input {
   padding: 0 16px;
 }
 
-/* ---------------------------------------------------------------- top bar */
+/* Top bar */
 
 .topbar {
   border-bottom: 1px solid var(--rule);
@@ -124,7 +124,7 @@ input {
   letter-spacing: 0.02em;
 }
 
-/* ---------------------------------------------------------------- controls */
+/* Controls */
 
 input {
   display: block;
@@ -201,7 +201,7 @@ input[aria-invalid='true'] {
   color: #fff;
 }
 
-/* ---------------------------------------------------------------- layout */
+/* Layout */
 
 .layout {
   display: grid;
@@ -424,7 +424,7 @@ h1 {
   color: var(--muted);
 }
 
-/* ---------------------------------------------------------------- side panel */
+/* Side panel */
 
 .panel {
   position: sticky;
@@ -505,7 +505,7 @@ h1 {
   margin: 8px auto 0;
 }
 
-/* ---------------------------------------------------------------- appointment card */
+/* Appointment card */
 
 .ticket {
   overflow: hidden;
@@ -705,7 +705,7 @@ h1 {
   }
 }
 
-/* ---------------------------------------------------------------- footer */
+/* Footer */
 
 .footer {
   padding-bottom: 32px;
@@ -719,7 +719,7 @@ h1 {
   max-width: 60ch;
 }
 
-/* ---------------------------------------------------------------- small screens */
+/* Small screens */
 
 @media (max-width: 860px) {
   .layout {

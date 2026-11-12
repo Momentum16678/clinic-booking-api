@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // Replaces all slots with two weeks of demo slots (and deletes all bookings).
 //   node scripts/seed.mjs https://your-app.vercel.app/api YOUR_API_KEY
 import { demoSlots } from '../src/demoSlots.js';

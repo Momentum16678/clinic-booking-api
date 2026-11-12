@@ -1,5 +1,3 @@
-// Plain Node server for local development (npm run dev) or hosts like Render.
-// Serves the web page from /public and everything else through the API handler.
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';

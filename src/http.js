@@ -1,6 +1,6 @@
 // Small HTTP helpers shared by every route.
 
-/** An error that should be returned to the client as {"error": message}. */
+// An error returned to the client as {"error": message}.
 export class HttpError extends Error {
   constructor(status, message, headers = {}) {
     super(message);
@@ -34,11 +34,8 @@ export function sendPreflight(res) {
 
 const MAX_BODY_BYTES = 100_000;
 
-/**
- * Reads and parses a JSON request body. Returns {} for an empty body.
- * Works with a plain Node request and with Vercel's request, which may
- * already have parsed the body into req.body.
- */
+// Reads and parses the JSON body ({} if empty). Works with a plain Node request
+// and with Vercel's, which may already have parsed req.body.
 export async function readJsonBody(req) {
   if ('body' in req) {
     let body;

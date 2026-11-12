@@ -1,6 +1,5 @@
-// Ìlera Clinic booking page. Plain JavaScript, no build step.
-// Talks to /web/* on the same server, which runs the same booking logic as the
-// public API without ever sending the API key to the browser.
+// Ìlera Clinic booking page: plain JavaScript, no build step.
+// Calls /web/* on the same server, so the API key never reaches the browser.
 
 const $ = (selector, root = document) => root.querySelector(selector);
 
@@ -32,7 +31,7 @@ const fmt = {
   time: new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true }),
 };
 
-// ---------------------------------------------------------------- data
+// Data
 
 async function request(method, path, body, headers = {}) {
   const res = await fetch(`/web${path}`, {
@@ -71,7 +70,7 @@ const slotById = (id) => state.allSlots.find((s) => s.id === id);
 const localDay = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-// ---------------------------------------------------------------- picker (left side)
+// Picker (left side)
 
 function renderPicker() {
   const slots = upcoming();
@@ -192,7 +191,7 @@ function chooseSlot(slot) {
   $('#name', els.panel)?.focus({ preventScroll: true });
 }
 
-// ---------------------------------------------------------------- panel (right side)
+// Panel (right side)
 
 function renderEmpty() {
   const children = [];
@@ -242,9 +241,8 @@ async function submitBooking(event) {
   if (!emailInput.checkValidity() || !email) return showFormError(form, 'Enter an email address like name@example.com.', emailInput);
 
   const body = { slot_id: state.selected.id, name, email };
-  // Level 4 from the browser's side: one Idempotency-Key per booking request.
-  // A double-click or a retry after a dropped connection reuses it, so the
-  // server returns the first booking instead of making a second one.
+  // Level 4, browser side: one Idempotency-Key per booking request, reused on a
+  // double-click or retry so the server returns the first booking.
   const fingerprint = JSON.stringify(body);
   if (state.pending?.fingerprint !== fingerprint) state.pending = { fingerprint, key: crypto.randomUUID() };
 
@@ -299,7 +297,7 @@ function showFormError(form, message, field) {
   }
 }
 
-// ---------------------------------------------------------------- the appointment card
+// The appointment card
 
 function showBooking({ arrive = false } = {}) {
   const b = state.booking;
@@ -407,7 +405,7 @@ function askToCancel(actions, another) {
   yes.focus();
 }
 
-// ---------------------------------------------------------------- find a booking
+// Find a booking
 
 function normalizeReference(raw) {
   const compact = raw.toUpperCase().replace(/[^0-9A-Z]/g, '').replace(/^BK/, '');
@@ -445,7 +443,7 @@ els.findForm.addEventListener('submit', (event) => {
   if (window.matchMedia('(max-width: 860px)').matches) els.panel.scrollIntoView({ block: 'start' });
 });
 
-// ---------------------------------------------------------------- helpers
+// Helpers
 
 function el(tag, props = {}, ...children) {
   const node = document.createElement(tag);
@@ -465,7 +463,7 @@ function prefersMotion() {
   return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-// ---------------------------------------------------------------- start
+// Start
 
 (async function start() {
   await loadSlots();
