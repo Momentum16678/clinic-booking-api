@@ -2,8 +2,8 @@
 
 A clinic appointment booking API and the web page that uses it. Built for Task 1 of the Koya Cohort 4 assessment, following the [technical spec](https://koyaacademy.com/assessment-api) exactly.
 
-- **API base URL:** `https://<your-project>.vercel.app/api`
-- **Web page:** `https://<your-project>.vercel.app`
+- **API base URL:** `https://clinic-booking-api-gamma.vercel.app/api`
+- **Web page:** `https://clinic-booking-api-gamma.vercel.app`
 
 All five levels are implemented. `scripts/check.mjs` runs 60 end-to-end checks against any deployment (see [Testing](#testing)).
 
@@ -13,7 +13,7 @@ All five levels are implemented. `scripts/check.mjs` runs 60 end-to-end checks a
 | --- | --- | --- |
 | Runtime | Node.js 20+, no framework | The API is six routes; a 40-line router keeps every line easy to follow. One dependency (`pg`). |
 | Database | Postgres (Neon) | Constraints and transactions make the concurrency guarantees hold across every server instance, not just inside one process. |
-| Hosting | Vercel | Always on (no cold-start sleep on the free plan), HTTPS by default, static page served from the CDN. |
+| Hosting | Vercel | HTTPS by default, static page served from the CDN, and no server that goes to sleep on the free plan. |
 | Web page | Plain HTML, CSS and JavaScript | No build step; loads fast on a phone. |
 
 ## How each level works
@@ -48,11 +48,13 @@ A sliding window of 5 attempts per email per 60 seconds, stored in Postgres so i
 - **Rejected (429) attempts aren't recorded**, so `Retry-After` is accurate: wait that long and the next attempt goes through.
 - **Booking ids are short references** (`BK-7F3K-9Q2M-XD4P`): 60 random bits from an alphabet without I/L/O/U, easy to read out at a reception desk and not guessable.
 - **The web page never sees the API key.** It calls `/web/*` routes on the same server, which run the same functions (validation, 409s, idempotency, rate limit) without the key check. `/reset` and "list bookings by email" are deliberately not exposed there: without patient accounts, anyone could list anyone's bookings.
+- **Vercel rewrites carry the route in the query.** The function can't see the original URL, so `vercel.json` sends `/api/*` and `/web/*` as `?scope=...&path=...` and `src/app.js` rebuilds the real path before routing.
 
 ## Project layout
 
 ```
-api/index.js          Vercel function entry (vercel.json routes /api/* and /web/* here)
+vercel.json           Rewrites /api/* and /web/* to the single function below
+api/index.js          Vercel function entry
 server.js             Plain Node server for local dev or hosts like Render
 src/app.js            Routing, API-key check, error handling
 src/db.js             Pool, transactions, schema (created automatically on first request)
@@ -81,7 +83,7 @@ Tables are created on the first request, and a new database gets demo slots.
 
 1. Push this repo to GitHub.
 2. In Vercel, **Add New → Project**, import the repo. Leave the framework preset as **Other** with no build command.
-3. In the project's **Storage** tab, create a **Neon** Postgres database and connect it. This sets `DATABASE_URL`.
+3. In the project's **Storage** tab, create a **Neon** Postgres database and connect it. Leave the **Custom Prefix** empty so `DATABASE_URL` is set. Leave the database-branch boxes unticked.
 4. In **Settings → Environment Variables**, add `API_KEY` with a long random value:
    `node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"`
 5. Redeploy so the new variables apply. Use the production domain (`<project>.vercel.app`); preview URLs can require a Vercel login.
